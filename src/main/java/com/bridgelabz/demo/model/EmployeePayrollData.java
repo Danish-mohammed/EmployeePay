@@ -1,4 +1,5 @@
 package com.bridgelabz.demo.model;
+
 import com.bridgelabz.demo.dto.EmployeePayrollDTO;
 import lombok.Data;
 

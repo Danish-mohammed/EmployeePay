@@ -5,7 +5,6 @@ import com.bridgelabz.demo.dto.ResponseDTO;
 import com.bridgelabz.demo.model.EmployeePayrollData;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,9 +17,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.bridgelabz.demo.Service.IEmployeePayrollService;
 import java.util.List;
 
+import javax.validation.Valid;
+
 
 @RestController
-@RequestMapping("/employeepayroll")
+@RequestMapping("/employeepayrollservice")
 public class EmployeePayrollController {
 	 @Autowired
 	 private IEmployeePayrollService employeePayrollService;
@@ -42,7 +43,7 @@ public class EmployeePayrollController {
 	}
 	
 	@PostMapping("/create")
-	public ResponseEntity<ResponseDTO> createEmployeePayrollData(@RequestBody EmployeePayrollDTO employeePayrollDTO){
+	public ResponseEntity<ResponseDTO> createEmployeePayrollData(@Valid @RequestBody EmployeePayrollDTO employeePayrollDTO){
 		EmployeePayrollData payrollData=null;
 		payrollData=employeePayrollService.createEmployeePayrollData(employeePayrollDTO);
 		ResponseDTO responseDTO = new ResponseDTO("Created Employee payroll data for:", payrollData);

@@ -15,15 +15,15 @@ public @Data class EmployeePayrollData {
 	private int employeeId;
 	@Column(name = "name")
 	private String name;
-	@Column(name = "salary")
+
 	private long salary;
-	@Column(name = "gender")
+
 	private String gender;
-	@Column(name = "start_date")
+
 	private LocalDate startDate;
-	@Column(name = "note")
+
 	private String note;
-	@Column(name = "profile_pic")
+
 	private String profilePic;
 
 	@ElementCollection
@@ -47,4 +47,3 @@ public @Data class EmployeePayrollData {
     }
 }
 
-}

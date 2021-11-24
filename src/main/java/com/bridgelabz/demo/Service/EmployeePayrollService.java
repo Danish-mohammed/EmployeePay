@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+
 import com.bridgelabz.demo.dto.EmployeePayrollDTO;
 import com.bridgelabz.demo.model.EmployeePayrollData;
 import com.bridgelabz.demo.Exceptions.EmployeePayrollException;
@@ -29,30 +32,28 @@ public class EmployeePayrollService implements IEmployeePayrollService {
 	}
 
 	@Override
-	public EmployeePayrollData getEmployeePayrollDataById(int employeeId) {
-		return employeePayrollRepository.findById(employeeId)
-                .orElseThrow(() -> new EmployeePayrollException("Employee with EmployeeId" + employeeId
-                        + " Doesn't Exists...!"));
+	public EmployeePayrollData getEmployeePayrollDataById(String token) {
+		
+		return employeePayrollRepository.findById(tokenUtil.decodeToken(token))
+                .orElseThrow(() -> new EmployeePayrollException("Employee With employeeId: " + tokenUtil.decodeToken(token) + " does not exists"));
 	}
 
 	@Override
-	public EmployeePayrollData createEmployeePayrollData(EmployeePayrollDTO empPayrollDTO) {
-		EmployeePayrollData empData = null;
-        empData = new EmployeePayrollData(empPayrollDTO);
-        log.debug("Employee Data: " + empData.toString());
+	public EmployeePayrollData createEmployeePayrollData(@RequestBody EmployeePayrollDTO empPayrollDTO) {
+		EmployeePayrollData empData = new EmployeePayrollData(empPayrollDTO);
         return employeePayrollRepository.save(empData);
 	}
 
 	@Override
-	public EmployeePayrollData updateEmployeePayrollData(int employeeId, EmployeePayrollDTO empPayrollDTO) {
-		EmployeePayrollData empData = this.getEmployeePayrollDataById(employeeId);
+	public EmployeePayrollData updateEmployeePayrollData(@RequestHeader String token,@RequestBody EmployeePayrollDTO empPayrollDTO) {
+		EmployeePayrollData empData = this.getEmployeePayrollDataById(token);
 		empData.updateEmployeePayollData(empPayrollDTO);
         return employeePayrollRepository.save(empData);
 	}
 
 	@Override
-	public void deleteEmployeePayrollData(int employeeId) {
-		 EmployeePayrollData empData = this.getEmployeePayrollDataById(employeeId);
+	public void deleteEmployeePayrollData(String token) {
+		 EmployeePayrollData empData = this.getEmployeePayrollDataById(token);
 	        employeePayrollRepository.delete(empData);
 	}
 
@@ -74,8 +75,8 @@ public class EmployeePayrollService implements IEmployeePayrollService {
 
 	    @Override
 	    public List<EmployeePayrollData> getAllEmployeePayrollData(String token) {
-	        Long id = tokenUtil.decodeToken(token);
-	        Optional<EmployeePayrollData> empData = employeePayrollRepository.findById(Math.toIntExact((id)));
+	        
+	        Optional<EmployeePayrollData> empData = employeePayrollRepository.findById(tokenUtil.decodeToken(token));
 	        if (empData.isPresent()) {
 	            List<EmployeePayrollData> employeePayrollDataList = employeePayrollRepository.findAll();
 	            return employeePayrollDataList;
@@ -85,10 +86,10 @@ public class EmployeePayrollService implements IEmployeePayrollService {
 
 	    @Override
 	    public Optional<EmployeePayrollData> getupdateEmployeePayrollData(String token) {
-	        Long id = tokenUtil.decodeToken(token);
-	        Optional<EmployeePayrollData> empData = employeePayrollRepository.findById(Math.toIntExact(id));
+	       
+	        Optional<EmployeePayrollData> empData = employeePayrollRepository.findById(tokenUtil.decodeToken(token));
 	        if (empData.isPresent()) {
-	            Optional<EmployeePayrollData> employeePayrollUpdateData = employeePayrollRepository.findById(Math.toIntExact(id));
+	            Optional<EmployeePayrollData> employeePayrollUpdateData = employeePayrollRepository.findById(tokenUtil.decodeToken(token));
 	            return employeePayrollUpdateData;
 	        }
 	        return null;

@@ -36,18 +36,23 @@ public class EmployeePayrollController {
 	 @Autowired
 	    private TokenUtil tokenUtil;
 
-	@RequestMapping(value = { "", "/", "get" })
-	public ResponseEntity<ResponseDTO> getEmployeePayrollData() {
-		List<EmployeePayrollData> empDataList = null;
-		empDataList = employeePayrollService.getEmployeePayrollData();
-		ResponseDTO respDTO = new ResponseDTO("Get Call Success", empDataList);
-		return new ResponseEntity<ResponseDTO>(respDTO, HttpStatus.OK);
-	}
+//	@RequestMapping(value = { "", "/", "get" })
+//	public ResponseEntity<ResponseDTO> getEmployeePayrollData() {
+//		List<EmployeePayrollData> empDataList = null;
+//		empDataList = employeePayrollService.getEmployeePayrollData();
+//		ResponseDTO respDTO = new ResponseDTO("Get Call Success", empDataList);
+//		return new ResponseEntity<ResponseDTO>(respDTO, HttpStatus.OK);
+//	}
 
-	@GetMapping("/get/{employeeId}")
-	public ResponseEntity<ResponseDTO> getEmployeePayrollData(@PathVariable("employeeId") int employeeId) {
-		EmployeePayrollData payrollData = null;
-		payrollData = employeePayrollService.getEmployeePayrollDataById(employeeId);
+	@GetMapping("/get/all")
+    public List<EmployeePayrollData> getEmployeePayrollData() {
+        List<EmployeePayrollData> employeesDataList = employeePayrollService.getEmployeePayrollData();
+        return employeesDataList;
+    }
+	
+	@GetMapping("/get")
+	public ResponseEntity<ResponseDTO> getEmployeePayrollDataById(@RequestHeader String token) {
+		EmployeePayrollData payrollData = employeePayrollService.getEmployeePayrollDataById(token);
 		ResponseDTO respDTO = new ResponseDTO("Get Call Success for id:", payrollData);
 		return new ResponseEntity<ResponseDTO>(respDTO, HttpStatus.OK);
 	}
@@ -56,25 +61,25 @@ public class EmployeePayrollController {
 	public ResponseEntity<ResponseDTO> createEmployeePayrollData(
 			@Valid @RequestBody EmployeePayrollDTO employeePayrollDTO) {
 		log.debug("Employee DTO" + employeePayrollDTO.toString());
-		EmployeePayrollData payrollData = null;
-		payrollData = employeePayrollService.createEmployeePayrollData(employeePayrollDTO);
-		ResponseDTO respDTO = new ResponseDTO("Created Employee payroll data for:", payrollData);
+		EmployeePayrollData payrollData = employeePayrollService.createEmployeePayrollData(employeePayrollDTO);
+		System.out.println(payrollData);
+
+		ResponseDTO respDTO = new ResponseDTO("Created Employee payroll data for:",tokenUtil.createToken(payrollData.getEmployeeId()));
 		return new ResponseEntity<ResponseDTO>(respDTO, HttpStatus.OK);
 	}
 
-	@PutMapping("/update/{employeeId}")
-	public ResponseEntity<ResponseDTO> updateEmployeePayrollData(@PathVariable("employeeId") int employeeId,
+	@PutMapping("/update")
+	public ResponseEntity<ResponseDTO> updateEmployeePayrollData(@RequestHeader String token,
 			@Valid @RequestBody EmployeePayrollDTO employeePayrollDTO) {
-		EmployeePayrollData payrollData = null;
-		payrollData = employeePayrollService.updateEmployeePayrollData(employeeId, employeePayrollDTO);
+		EmployeePayrollData payrollData = employeePayrollService.updateEmployeePayrollData(token, employeePayrollDTO);
 		ResponseDTO respDTO = new ResponseDTO("Updated Employee payroll Data for: ", payrollData);
 		return new ResponseEntity<ResponseDTO>(respDTO, HttpStatus.OK);
 	}
 
-	@DeleteMapping("/delete/{employeeId}")
-	public ResponseEntity<ResponseDTO> deleteEmployeePayrollData(@PathVariable("employeeId") int employeeId) {
-		employeePayrollService.deleteEmployeePayrollData(employeeId);
-		ResponseDTO respDTO = new ResponseDTO("Delete Call Success for id: ", "employeeId " + employeeId);
+	@DeleteMapping("/delete")
+	public ResponseEntity<ResponseDTO> deleteEmployeePayrollData(@RequestHeader String token) {
+		employeePayrollService.deleteEmployeePayrollData(token);
+		ResponseDTO respDTO = new ResponseDTO("Delete Call Success for id: ", "employeeId " + tokenUtil.decodeToken(token));
 		return new ResponseEntity<ResponseDTO>(respDTO, HttpStatus.OK);
 	}
 	
@@ -98,8 +103,7 @@ public class EmployeePayrollController {
 
 	    @GetMapping("/readdata")
 	    public ResponseEntity<ResponseDTO> readdata(@RequestHeader(name = "token") String token) throws EmployeePayrollException {
-	        List<EmployeePayrollData> employeeList = null;
-	        employeeList = employeePayrollService.getAllEmployeePayrollData(token);
+	        List<EmployeePayrollData> employeeList = employeePayrollService.getAllEmployeePayrollData(token);
 	        if (employeeList.size() > 0) {
 	            ResponseDTO responseDTO = new ResponseDTO("all user Fetched successfully", employeeList);
 	            return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
@@ -125,6 +129,4 @@ public class EmployeePayrollController {
 	        ResponseDTO respDTO = new ResponseDTO("Deleted Successful,Deleted Id:", empData);
 	        return new ResponseEntity<ResponseDTO>(respDTO, HttpStatus.OK);
 	    }
-
-
 }

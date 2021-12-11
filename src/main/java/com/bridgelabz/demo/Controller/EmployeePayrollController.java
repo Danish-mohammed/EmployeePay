@@ -4,7 +4,7 @@ import com.bridgelabz.demo.dto.EmployeePayrollDTO;
 import com.bridgelabz.demo.dto.ResponseDTO;
 import com.bridgelabz.demo.model.EmployeePayrollData;
 import com.bridgelabz.demo.util.TokenUtil;
-
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -27,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 import javax.validation.Valid;
 
 @RestController
+@CrossOrigin(allowedHeaders = "*", origins = "*")
 @RequestMapping("/employeepayrollservice")
 @Slf4j
 public class EmployeePayrollController {
